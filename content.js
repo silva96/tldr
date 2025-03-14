@@ -97,7 +97,36 @@ function isUserTyping() {
 
 // Find and summarize the nearest text block to the cursor
 function summarizeNearestText() {
-  // Find the element closest to the cursor that contains text
+  // First check if there's any text selected by the user
+  const selection = getSelectedTextAndElement();
+
+  if (selection && selection.text && selection.text.trim().length >= 100) {
+    // User has text selected, use that instead of finding nearest element
+    console.log("Using selected text for summary");
+
+    // Show loading indicator near the selected text
+    const loadingIndicator = showLoading(selection.element);
+
+    // Generate summary using API
+    generateAISummary(selection.text)
+      .then((summaryData) => {
+        // Remove loading indicator
+        loadingIndicator.remove();
+        // Display the summary
+        displaySummary(selection.element, summaryData);
+      })
+      .catch((error) => {
+        console.error("Error generating summary:", error);
+        loadingIndicator.remove();
+        showNotification(
+          "Error generating summary. Please check your API key."
+        );
+      });
+
+    return;
+  }
+
+  // No valid selection, fall back to finding the element closest to the cursor
   const element = findNearestTextElement(cursorPosition);
 
   if (!element) {
@@ -131,6 +160,44 @@ function summarizeNearestText() {
       loadingIndicator.remove();
       showNotification("Error generating summary. Please check your API key.");
     });
+}
+
+// Get selected text and its containing element
+function getSelectedTextAndElement() {
+  const selection = window.getSelection();
+
+  if (
+    !selection ||
+    selection.rangeCount === 0 ||
+    selection.toString().trim() === ""
+  ) {
+    return null;
+  }
+
+  const text = selection.toString();
+
+  // Get the common ancestor element that contains the entire selection
+  const range = selection.getRangeAt(0);
+  let element = range.commonAncestorContainer;
+
+  // If the element is a text node, get its parent element
+  if (element.nodeType === Node.TEXT_NODE) {
+    element = element.parentElement;
+  }
+
+  // Check if we should use a parent container (like an article) instead
+  const articleParent = findParentWithTagName(element, "article");
+  if (articleParent) {
+    return { text, element: articleParent };
+  }
+
+  // For Gmail, check if we're in a listitem
+  const listItemParent = findParentWithAttribute(element, "role", "listitem");
+  if (listItemParent) {
+    return { text, element: listItemParent };
+  }
+
+  return { text, element };
 }
 
 // Find the nearest element containing text
@@ -719,4 +786,13 @@ async function displaySummary(element, summaryData) {
       easing: "ease-out",
     }
   );
+
+  // Scroll the summary into view with smooth scrolling
+  setTimeout(() => {
+    summaryContainer.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+  }, 100); // Small delay to ensure the element is fully rendered
 }

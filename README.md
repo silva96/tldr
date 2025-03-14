@@ -28,9 +28,20 @@ A browser extension that generates concise summaries of text on any webpage with
 ## Usage
 
 1. Navigate to any webpage with text content
-2. Position your cursor near the text you want to summarize
+2. Use one of these methods to summarize content:
+   - **Selected Text**: Highlight any text (minimum 100 characters) and type the TLDR sequence
+   - **Articles**: Place your cursor near an article and type the TLDR sequence to summarize the entire article
+   - **Gmail**: When viewing emails in Gmail, trigger the TLDR sequence to summarize the current email
+   - **General Text**: For any other text content, position your cursor near it and type the TLDR sequence
 3. Type the sequence "T", "L", "D", "R" on your keyboard (not in a text input field)
-4. A summary will appear at the top of the text content
+4. A summary will appear at the top of the content
+
+The extension intelligently prioritizes content in this order:
+
+1. Your selected text (if any)
+2. Full articles (the extension will detect if you're inside an article)
+3. Gmail messages (when using Gmail)
+4. General text content near your cursor
 
 ## Configuration
 
