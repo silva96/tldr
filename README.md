@@ -75,6 +75,20 @@ After installing the extension, you'll need to set up your API keys:
 - Language detection based on browser settings for multilingual summaries
 - Minimally invasive with careful DOM manipulation
 
+## Development
+
+### Reloading After Code Changes
+
+When you make changes to the extension code:
+
+1. Navigate to `chrome://extensions/`
+2. Find the TLDR Extension and click the refresh icon (🔄)
+3. **Important:** Changes to content scripts will not apply to already open tabs
+4. To see the changes, you must open a new tab after reloading the extension
+5. The refreshed code will only be injected into newly loaded pages
+
+This behavior is standard for Chrome extensions - refreshing the extension at `chrome://extensions` doesn't re-inject content scripts into existing tabs.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

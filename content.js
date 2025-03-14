@@ -34,30 +34,41 @@ document.addEventListener("keydown", (event) => {
     keypressSequence = [];
   }
 
+  // Track the key for potential use in the sequence
   lastKeypressTime = currentTime;
 
-  // Add the lowercase key to the sequence
-  keypressSequence.push(key);
+  // Check if this key could be part of our sequence
+  const expectedIndex = keypressSequence.length;
+  const isNextInSequence = key === targetSequence[expectedIndex];
 
-  // Only keep the last 4 keypresses
-  if (keypressSequence.length > 4) {
-    keypressSequence.shift();
-  }
+  // If this is the next key in our sequence
+  if (isNextInSequence) {
+    // Add the key to our sequence
+    keypressSequence.push(key);
 
-  // Check if the sequence matches
-  if (arraysEqual(keypressSequence, targetSequence)) {
-    // Prevent default browser behavior
+    // Prevent default to avoid site shortcuts for keys that are part of our sequence
     event.preventDefault();
 
-    // Reset the sequence
-    keypressSequence = [];
+    // If we've completed the sequence
+    if (keypressSequence.length === targetSequence.length) {
+      // Reset the sequence
+      keypressSequence = [];
 
-    // Get text near cursor and summarize
-    summarizeNearestText();
-  } else if (targetSequence.includes(key)) {
-    // If this key is part of our target sequence, prevent default to avoid triggering site shortcuts
-    // This prevents Twitter's shortcuts from activating during our sequence
-    event.preventDefault();
+      // Get text near cursor and summarize
+      summarizeNearestText();
+    }
+  } else {
+    // Not the next key in sequence, reset the sequence
+    // But first check if this is a new start of the sequence ('t')
+    if (key === targetSequence[0]) {
+      keypressSequence = [key];
+      // Prevent default since this is starting our sequence
+      event.preventDefault();
+    } else {
+      // Not part of our sequence at all
+      keypressSequence = [];
+      // DO NOT prevent default here - allow regular browser behavior
+    }
   }
 });
 
@@ -124,14 +135,12 @@ function summarizeNearestText() {
 
 // Find the nearest element containing text
 function findNearestTextElement(cursorPosition) {
-  // Check if we're on Twitter
-  const isTwitter =
-    window.location.hostname.includes("twitter.com") ||
-    window.location.hostname.includes("x.com");
+  // Check if we're on Gmail
+  const isGmail = window.location.hostname.includes("mail.google.com");
 
-  // Special handling for Twitter
-  if (isTwitter) {
-    return findTwitterTweet(cursorPosition);
+  // Special handling for Gmail
+  if (isGmail) {
+    return findGmailMessage(cursorPosition);
   }
 
   // Elements to ignore
@@ -208,35 +217,45 @@ function findNearestTextElement(cursorPosition) {
   // Sort by distance to cursor
   textElements.sort((a, b) => a.distance - b.distance);
 
-  // Return the closest element
-  return textElements[0].element;
+  // Get the closest element
+  const closestElement = textElements[0].element;
+
+  // Check if the element is within an article
+  const articleElement = findParentWithTagName(closestElement, "article");
+  if (articleElement) {
+    // If the element is part of an article, return the whole article
+    return articleElement;
+  }
+
+  // If not part of an article, return the original element
+  return closestElement;
 }
 
-// Find a complete tweet on Twitter
-function findTwitterTweet(cursorPosition) {
+// Find a Gmail message based on cursor position
+function findGmailMessage(cursorPosition) {
   // Find elements near cursor
   const elementsAtPoint = document.elementsFromPoint(
     cursorPosition.x,
     cursorPosition.y
   );
 
-  // Look for tweet containers
+  // Look for email message container
   for (let element of elementsAtPoint) {
-    // Look for the article element which contains the tweet
-    const articleElement = findParentWithTagName(element, "article");
-    if (articleElement) {
-      return articleElement;
+    // Look for div with role="listitem" which contains the email
+    const emailContainer = findParentWithAttribute(element, "role", "listitem");
+    if (emailContainer) {
+      return emailContainer;
     }
   }
 
-  // Fallback: find closest article to cursor
-  const articles = document.querySelectorAll("article");
-  if (articles.length > 0) {
-    let closestArticle = null;
+  // Fallback: find closest div with role="listitem"
+  const emailContainers = document.querySelectorAll('div[role="listitem"]');
+  if (emailContainers.length > 0) {
+    let closestContainer = null;
     let closestDistance = Infinity;
 
-    for (let article of articles) {
-      const rect = article.getBoundingClientRect();
+    for (let container of emailContainers) {
+      const rect = container.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       const distance = Math.sqrt(
@@ -246,15 +265,27 @@ function findTwitterTweet(cursorPosition) {
 
       if (distance < closestDistance) {
         closestDistance = distance;
-        closestArticle = article;
+        closestContainer = container;
       }
     }
 
-    if (closestArticle) {
-      return closestArticle;
+    if (closestContainer) {
+      return closestContainer;
     }
   }
 
+  return null;
+}
+
+// Helper function to find parent with specific attribute
+function findParentWithAttribute(element, attribute, value) {
+  let current = element;
+  while (current) {
+    if (current.getAttribute && current.getAttribute(attribute) === value) {
+      return current;
+    }
+    current = current.parentElement;
+  }
   return null;
 }
 
@@ -521,16 +552,16 @@ function showLoading(element) {
     </style>
   `;
 
-  // Check if we're on Twitter and the element is an article
-  const isTwitter =
-    window.location.hostname.includes("twitter.com") ||
-    window.location.hostname.includes("x.com");
-
-  if (isTwitter && element.tagName.toLowerCase() === "article") {
-    // Insert the loading indicator before the article (as a sibling)
+  // Check if the element is an article or Gmail message
+  if (
+    element.tagName.toLowerCase() === "article" ||
+    (element.tagName.toLowerCase() === "div" &&
+      element.getAttribute("role") === "listitem")
+  ) {
+    // Insert the loading indicator before the element (as a sibling)
     element.parentNode.insertBefore(loadingContainer, element);
   } else {
-    // For non-Twitter sites or non-article elements, insert at the top of the element
+    // For other elements, insert at the top of the element
     element.insertBefore(loadingContainer, element.firstChild);
   }
 
@@ -664,16 +695,16 @@ async function displaySummary(element, summaryData) {
     summaryContainer.appendChild(tokenInfo);
   }
 
-  // Check if we're on Twitter and the element is an article
-  const isTwitter =
-    window.location.hostname.includes("twitter.com") ||
-    window.location.hostname.includes("x.com");
-
-  if (isTwitter && element.tagName.toLowerCase() === "article") {
-    // Insert the summary before the article (as a sibling)
+  // Check if the element is an article or Gmail message
+  if (
+    element.tagName.toLowerCase() === "article" ||
+    (element.tagName.toLowerCase() === "div" &&
+      element.getAttribute("role") === "listitem")
+  ) {
+    // Insert the summary before the element (as a sibling)
     element.parentNode.insertBefore(summaryContainer, element);
   } else {
-    // For non-Twitter sites or non-article elements, insert at the top of the element
+    // For other elements, insert at the top of the element
     element.insertBefore(summaryContainer, element.firstChild);
   }
 
