@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TLDR Extension</title>
+    <style>
+      body {
+        width: 300px;
+        padding: 15px;
+        font-family: Arial, sans-serif;
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      p {
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      .shortcut {
+        background-color: #f0f0f0;
+        padding: 8px;
+        border-radius: 4px;
+        margin: 10px 0;
+        font-weight: bold;
+        text-align: center;
+      }
+      .options-link {
+        display: block;
+        margin-top: 15px;
+        text-align: center;
+        color: #4285f4;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .options-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TLDR Extension</h1>
+    <p>This extension lets you quickly summarize text near your cursor.</p>
+    <div class="shortcut">Press T &rarr; L &rarr; D &rarr; R</div>
+    <p>
+      Press these keys in sequence (when not typing in a text field) to generate
+      a summary of the nearest text block.
+    </p>
+    <a class="options-link" id="options-link">Set your OpenAI/Anthropic API key</a>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

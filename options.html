@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TLDR Extension Options</title>
+    <style>
+      body {
+        width: 500px;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        line-height: 1.5;
+      }
+      h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .radio-group {
+        margin-top: 10px;
+      }
+      .radio-option {
+        margin-bottom: 8px;
+      }
+      .radio-option label {
+        font-weight: normal;
+        display: inline;
+        margin-left: 5px;
+      }
+      .checkbox-option {
+        margin-top: 8px;
+      }
+      .checkbox-option label {
+        font-weight: normal;
+        display: inline;
+        margin-left: 5px;
+      }
+      button {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #3367d6;
+      }
+      .info {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .success {
+        color: #0f5132;
+        background-color: #d1e7dd;
+        border-color: #badbcc;
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 10px;
+        display: none;
+      }
+      .api-container {
+        border: 1px solid #eee;
+        padding: 15px;
+        border-radius: 4px;
+        margin-top: 10px;
+        background-color: #fafafa;
+      }
+      .section-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .hidden-field {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TLDR Extension Settings</h1>
+
+    <div class="form-group">
+      <label>AI Provider</label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input
+            type="radio"
+            id="providerOpenAI"
+            name="aiProvider"
+            value="openai"
+            checked
+          />
+          <label for="providerOpenAI">OpenAI (GPT-3.5 Turbo)</label>
+        </div>
+        <div class="radio-option">
+          <input
+            type="radio"
+            id="providerAnthropic"
+            name="aiProvider"
+            value="anthropic"
+          />
+          <label for="providerAnthropic">Anthropic (Claude)</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="openai-container" class="api-container">
+      <div class="section-title">OpenAI Settings</div>
+      <div class="form-group">
+        <label for="openaiApiKey">OpenAI API Key</label>
+        <input type="text" id="openaiApiKey" placeholder="sk-..." />
+        <p>
+          Your API key is stored securely in your browser and is only used to
+          generate summaries.
+        </p>
+      </div>
+    </div>
+
+    <div id="anthropic-container" class="api-container hidden-field">
+      <div class="section-title">Anthropic Settings</div>
+      <div class="form-group">
+        <label for="anthropicApiKey">Anthropic API Key</label>
+        <input type="text" id="anthropicApiKey" placeholder="sk-ant-..." />
+        <p>
+          Your API key is stored securely in your browser and is only used to
+          generate summaries.
+        </p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="checkbox-option">
+        <input type="checkbox" id="showTokenCost" checked />
+        <label for="showTokenCost"
+          >Show token count and cost information with summaries</label
+        >
+      </div>
+    </div>
+
+    <button id="save">Save Settings</button>
+    <div id="status" class="success"></div>
+
+    <div class="info">
+      <p><strong>How to get API keys:</strong></p>
+      <ol>
+        <li>
+          <strong>OpenAI</strong>: Visit
+          <a href="https://platform.openai.com/api-keys" target="_blank"
+            >platform.openai.com/api-keys</a
+          >
+        </li>
+        <li>
+          <strong>Anthropic</strong>: Visit
+          <a href="https://console.anthropic.com/settings/keys" target="_blank"
+            >console.anthropic.com/settings/keys</a
+          >
+        </li>
+      </ol>
+      <p>
+        <strong>Note:</strong> Using these APIs requires paid accounts with the
+        respective providers. You will be charged based on your usage.
+      </p>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>

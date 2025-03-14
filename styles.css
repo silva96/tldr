@@ -1,0 +1,59 @@
+/* Styles for the TLDR summary container */
+.tldr-summary-container {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+  max-height: 300px;
+  overflow-y: auto;
+  animation: tldr-fade-in 0.3s ease-out;
+}
+
+.tldr-header {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.tldr-content {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.tldr-close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  transition: color 0.2s;
+}
+
+.tldr-close-button:hover {
+  color: #000;
+}
+
+@keyframes tldr-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
