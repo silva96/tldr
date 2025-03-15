@@ -15,11 +15,15 @@ A browser extension that generates concise summaries of text on any webpage with
 
 ### Manual Installation (Developer Mode)
 
-1. Download or clone this repository
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" (toggle in the top-right corner)
-4. Click "Load unpacked" and select the directory containing the extension files
-5. The extension should now be installed and visible in your browser toolbar
+1. Download the ZIP file from GitHub by clicking the green "Code" button and selecting "Download ZIP"
+   ![Download ZIP](/images/CleanShot%202025-03-15%20at%2010.10.14%202.png)
+2. Extract the downloaded ZIP file to a folder on your computer
+3. Open Chrome and navigate to `chrome://extensions/`
+4. Enable "Developer mode" (toggle in the top-right corner)
+5. Click "Load unpacked" and select the directory containing the extracted extension files
+6. The extension should now be installed and visible in your browser toolbar
+
+**Important:** The extension will not work on tabs that were already open before installation. You must open new tabs after installing for the extension to be properly loaded and functional.
 
 ### Chrome Web Store
 
