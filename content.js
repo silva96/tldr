@@ -787,12 +787,30 @@ async function displaySummary(element, summaryData) {
     }
   );
 
-  // Scroll the summary into view with smooth scrolling
+  // Scroll the summary into view with smooth scrolling, but only if it's not already visible
   setTimeout(() => {
-    summaryContainer.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-      inline: "nearest",
-    });
+    // Check if the summary is already visible in the viewport
+    const rect = summaryContainer.getBoundingClientRect();
+    const isVisible =
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= window.innerHeight &&
+      rect.right <= window.innerWidth;
+
+    // Only scroll if the summary is not fully visible
+    if (!isVisible) {
+      // Use custom scrolling with buffer instead of scrollIntoView
+      // to account for fixed navigation bars on websites
+      const scrollBuffer = 100; // 100px buffer from the top
+
+      // Calculate the target scroll position
+      const targetY = window.scrollY + rect.top - scrollBuffer;
+
+      // Scroll with smooth behavior
+      window.scrollTo({
+        top: targetY,
+        behavior: "smooth",
+      });
+    }
   }, 100); // Small delay to ensure the element is fully rendered
 }
